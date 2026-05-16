@@ -11,11 +11,13 @@ Este archivo contiene todo lo necesario para que una sesión de Claude Code sin 
 | Nombre | Curso de Devin AI para Softtek |
 | Cliente | Softtek |
 | Audiencia | Desarrolladores de distintos lenguajes y seniorities |
-| Formato | Presencial o remoto con pantalla compartida |
+| Formato | Virtual |
+| Plataforma | Cisco WebEx (credenciales en poder del formador, no incluir en este archivo) |
 | Número de sesiones | 8 |
 | Duración por sesión | 3 horas (incluyendo 20 min de descanso) |
-| Horario | 15:30 – 18:15 |
+| Horario | 15:30 – 18:30 |
 | Idioma | Castellano (código en inglés, todo lo demás en castellano) |
+| Cuenta Devin | versión gratuita de devin.ai, cada alumno con su propia cuenta |
 
 ---
 
@@ -131,7 +133,7 @@ def list_tasks(
 
 ## 4. Tabla de las 8 sesiones
 
-Cada sesión dura 3 horas (15:30–18:15) e incluye 20 min de descanso. Los bloques B1–B10 son las unidades de contenido teórico del curso.
+Cada sesión dura 3 horas (15:30–18:30) e incluye 20 min de descanso. Los bloques B1–B10 son las unidades de contenido teórico del curso.
 
 | Sesión | Bloques | Contenido principal | Escenario de práctica |
 |---|---|---|---|
@@ -154,9 +156,9 @@ Cada sesión dura 3 horas (15:30–18:15) e incluye 20 min de descanso. Los bloq
 | Bloque teórico principal (2ª parte) | 25 min | 16:20 |
 | Demo en vivo | 20 min | 16:45 |
 | **DESCANSO** | **20 min** | **17:05** |
-| Actividad técnica | 35 min | 17:25 |
-| Puesta en común | 10 min | 18:00 |
-| Cierre y preview sesión siguiente | 5 min | 18:10 |
+| Actividad técnica | 50 min | 17:25 |
+| Puesta en común | 10 min | 18:15 |
+| Cierre y preview sesión siguiente | 5 min | 18:25 |
 
 *Nota: el timing de las sesiones B3+B4 y posteriores puede variar si la parte teórica es más corta. Ajustar añadiendo tiempo a la actividad técnica, nunca reduciendo el descanso.*
 
@@ -174,6 +176,7 @@ Cada sesión dura 3 horas (15:30–18:15) e incluye 20 min de descanso. Los bloq
 | `.gitignore` | Completo | `__pycache__/`, `*.pyc`, `*.db`, `.claude/`, `venv/` |
 | `aplicacion/` (5 archivos) | Completo en `main` | API funcional con comentarios en castellano |
 | 5 ramas de escenarios | Completo y pusheadas | PRs abiertos contra `main` en GitHub |
+| `README.md` | Vacío intencionalmente | Forma parte del escenario 4 (`escenario-4-sin-documentacion`). No añadir contenido. |
 
 ### Pendientes
 
@@ -191,23 +194,26 @@ Cada sesión dura 3 horas (15:30–18:15) e incluye 20 min de descanso. Los bloq
 
 ## 6. Índice de la presentación de la sesión 1 — 13 diapositivas
 
-La sesión 1 no usa diapositivas en PowerPoint; el formador trabaja directamente desde VS Code y el navegador. Las 13 "diapositivas" son los momentos en que cambia lo que se muestra en pantalla. Este índice sirve de referencia para crear materiales visuales opcionales.
+La sesión 1 tiene una presentación de 13 diapositivas en Gamma:
+**URL:** https://gamma.app/docs/Devin-AI-drzx5jgsctwn5hs
+
+El índice siguiente describe cada diapositiva con la pantalla que debe mostrarse y el momento exacto de la sesión en que se usa.
 
 | # | Título de diapositiva | Pantalla | Momento en la sesión |
 |---|---|---|---|
 | 1 | Sesión 01 — Introducción a Devin AI | Título con datos del curso | Apertura (15:30) |
 | 2 | Objetivos de la sesión | Lista de 4 objetivos de aprendizaje | Apertura |
-| 3 | Copilot vs Agente autónomo | VS Code con repo abierto al fondo | B1 — 15:40 |
-| 4 | Las 4 capacidades reales de Devin | VS Code visible, hablar sin slides | B1 |
-| 5 | Las 4 limitaciones reales de Devin | Ídem | B1 |
-| 6 | Casos de uso: cuándo sí, cuándo no | Ídem | B1 |
+| 3 | Copilot vs Agente autónomo | Diapositiva Gamma | B1 — 15:40 |
+| 4 | Las 4 capacidades reales de Devin | Diapositiva Gamma | B1 |
+| 5 | Las 4 limitaciones reales de Devin | Diapositiva Gamma | B1 |
+| 6 | Casos de uso: cuándo sí, cuándo no | Diapositiva Gamma | B1 |
 | 7 | Caso real: Gumroad — 1.500 PRs | Post de Sahil Lavingia / captura | 16:15 |
 | 8 | Casos reales: Goldman Sachs y Visma | Ídem o cita textual | 16:15 |
-| 9 | Arquitectura interna — ciclo de trabajo | Pizarra o documento en blanco | B2 — 16:20 |
-| 10 | Diagrama ASCII del flujo de planificación | Diagrama dibujado en vivo | B2 |
-| 11 | Las 3 herramientas: Terminal · Editor · Navegador | Diagrama del B2 | B2 |
-| 12 | Cómo itera Devin cuando algo falla | Diagrama del B2 | B2 |
-| 13 | Resumen de la sesión y preview de la sesión 2 | Repo en GitHub, rama `main` | Cierre — 18:10 |
+| 9 | Arquitectura interna — ciclo de trabajo | Diapositiva Gamma | B2 — 16:20 |
+| 10 | Diagrama ASCII del flujo de planificación | Diapositiva Gamma | B2 |
+| 11 | Las 3 herramientas: Terminal · Editor · Navegador | Diapositiva Gamma | B2 |
+| 12 | Cómo itera Devin cuando algo falla | Diapositiva Gamma | B2 |
+| 13 | Resumen de la sesión y preview de la sesión 2 | Diapositiva Gamma | Cierre — 18:25 |
 
 ---
 
@@ -240,7 +246,7 @@ Seguir exactamente el mismo estilo y estructura que `guias/sesion-01-introduccio
 
 **Duración total:** 3 horas (incluyendo 20 min de descanso)
 **Audiencia:** Desarrolladores de Softtek de distintos lenguajes y seniorities
-**Formato:** Presencial o remoto con pantalla compartida
+**Formato:** Virtual
 
 ---
 
@@ -287,19 +293,19 @@ Seguir exactamente el mismo estilo y estructura que `guias/sesion-01-introduccio
 
 ---
 
-## Actividad técnica `[35 min — 17:25]`
+## Actividad técnica `[50 min — 17:25]`
 ### Enunciado
 ### Criterios de éxito
 ### Solución esperada (para uso del formador al validar)
 
 ---
 
-## Puesta en común `[10 min — 18:00]`
+## Puesta en común `[10 min — 18:15]`
 [4 preguntas con instrucciones sobre qué buscar]
 
 ---
 
-## Cierre y preview de la sesión [N+1] `[5 min — 18:10]`
+## Cierre y preview de la sesión [N+1] `[5 min — 18:25]`
 [3 ideas clave de la sesión + descripción concreta de la sesión siguiente]
 ```
 
@@ -311,7 +317,7 @@ Seguir exactamente el mismo estilo y estructura que `guias/sesion-01-introduccio
 - B4 cubre: flujo de trabajo completo — conectar repo, escribir la primera tarea bien descrita, leer el plan de Devin, supervisar la ejecución, revisar el PR resultante.
 - Demo: conectar el repo `gestor-tareas-api` en modo escritura y pedirle a Devin que corrija el bug #1 del PR #1 (validación de longitud de título) con test incluido.
 - Actividad: los alumnos repiten la demo con el bug #2 (condición invertida en `update_task`). Criterio de éxito: PR creado por Devin con la corrección correcta y el test de regresión.
-- Caso real intercalado: caso Cognition Labs (creadores de Devin) — cómo describen ellos mismos el modelo de delegación segura.
+- Caso real intercalado: caso real pendiente de verificar.
 
 **Sesión 3 — Flujo de trabajo con PRs**
 

@@ -78,3 +78,70 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+# ---- Tests de error 404 (get_task_or_404) ----
+
+
+def test_get_task_not_found_returns_404(client):
+    resp = client.get("/tasks/9999")
+
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "Task not found"
+
+
+def test_update_nonexistent_task_returns_404(client):
+    resp = client.patch("/tasks/9999", json={"title": "X"})
+
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "Task not found"
+
+
+def test_delete_nonexistent_task_returns_404(client):
+    resp = client.delete("/tasks/9999")
+
+    assert resp.status_code == 404
+    assert resp.json()["detail"] == "Task not found"
+
+
+# ---- Tests de list_tasks, get_task y delete_task ----
+
+
+def test_list_tasks_empty(client):
+    resp = client.get("/tasks/")
+
+    assert resp.status_code == 200
+    assert resp.json() == []
+
+
+def test_list_tasks_returns_created_tasks(client):
+    _create_task(client, title="A")
+    _create_task(client, title="B")
+
+    resp = client.get("/tasks/")
+
+    assert resp.status_code == 200
+    titles = [t["title"] for t in resp.json()]
+    assert "A" in titles
+    assert "B" in titles
+
+
+def test_get_task_returns_existing_task(client):
+    task = _create_task(client, title="Detail")
+
+    resp = client.get(f"/tasks/{task['id']}")
+
+    assert resp.status_code == 200
+    assert resp.json()["title"] == "Detail"
+    assert resp.json()["id"] == task["id"]
+
+
+def test_delete_task_returns_204(client):
+    task = _create_task(client)
+
+    resp = client.delete(f"/tasks/{task['id']}")
+
+    assert resp.status_code == 204
+
+    resp = client.get(f"/tasks/{task['id']}")
+    assert resp.status_code == 404

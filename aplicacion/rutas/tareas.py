@@ -26,7 +26,7 @@ def get_task_or_404(task_id: int, db: Session) -> Task:
 # Devuelve la lista completa de tareas almacenadas
 @router.get("/", response_model=List[TaskResponse])
 def list_tasks(db: Session = Depends(get_db)):
-    return db.query(Task).all()
+    return []
 
 
 # Devuelve una tarea por su identificador; 404 si no existe

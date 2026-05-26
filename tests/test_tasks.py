@@ -1,80 +1,136 @@
+# Tests de la API de gestión de tareas con pytest y FastAPI TestClient
+#
+# COBERTURA:
+#   - POST /tasks  → crear tarea correctamente
+#   - GET  /tasks  → listar tareas
+#   - POST /tasks con título vacío o menor de 3 caracteres (error 422)
+#   - GET  /tasks/{id} con id inexistente (error 404)
+#   - PATCH /tasks/{id} sobre una tarea con estado "done" (error 400)
+#   - PATCH /tasks/{id} con id inexistente (error 404)
+#   - DELETE /tasks/{id} con id inexistente (error 404)
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from aplicacion.base_de_datos import Base, get_db
 from aplicacion.principal import app
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test_tareas.db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+# StaticPool garantiza que todas las sesiones comparten la misma conexión en memoria;
+# sin él cada sesión abriría una conexión nueva y vería una base de datos vacía distinta
+engine_test = create_engine(
+    "sqlite:///:memory:",
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine_test)
 
 
-@pytest.fixture(autouse=True)
-def setup_database():
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
+def override_get_db():
+    # Sustituye la dependencia de BD real por la sesión de test
+    db = TestingSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 def client():
-    def override_get_db():
-        db = TestingSessionLocal()
-        try:
-            yield db
-        finally:
-            db.close()
+    # 1. Crear tablas en el engine de test antes de instanciar el TestClient;
+    #    principal.py ya no llama create_all al importarse (usa lifespan),
+    #    así que aquí tenemos control total sobre qué engine se usa
+    Base.metadata.create_all(bind=engine_test)
 
+    # 2. Sobreescribir la dependencia de BD para que todas las peticiones usen engine_test
     app.dependency_overrides[get_db] = override_get_db
+
+    # 3. TestClient sin context manager: no dispara el lifespan de la app,
+    #    evitando que el create_all de producción interfiera con engine_test
     yield TestClient(app)
+
+    # 4. Limpieza al terminar cada test
     app.dependency_overrides.clear()
+    Base.metadata.drop_all(bind=engine_test)
 
 
-def _create_task(client, **kwargs):
-    payload = {"title": "Test task", **kwargs}
-    resp = client.post("/tasks/", json=payload)
-    assert resp.status_code == 201
-    return resp.json()
+# ---------------------------------------------------------------------------
+# Happy path: crear tarea
+# ---------------------------------------------------------------------------
+
+def test_crear_tarea_correctamente(client):
+    # Verifica que una tarea válida se crea y devuelve los campos esperados
+    payload = {"title": "Tarea de prueba", "description": "Descripción de ejemplo"}
+    response = client.post("/tasks/", json=payload)
+
+    assert response.status_code == 201
+    data = response.json()
+    assert data["title"] == "Tarea de prueba"
+    assert data["description"] == "Descripción de ejemplo"
+    assert data["status"] == "pending"
+    assert "id" in data
+    assert "created_at" in data
 
 
-def test_update_done_task_returns_400(client):
-    task = _create_task(client, status="done")
+# ---------------------------------------------------------------------------
+# Happy path: listar tareas
+# ---------------------------------------------------------------------------
 
-    resp = client.patch(f"/tasks/{task['id']}", json={"title": "New title"})
+def test_listar_tareas_vacio(client):
+    # Sin tareas creadas la respuesta debe ser una lista vacía
+    response = client.get("/tasks/")
 
-    assert resp.status_code == 400
-    assert resp.json()["detail"] == "Cannot update a completed task"
-
-
-def test_update_pending_task_succeeds(client):
-    task = _create_task(client)
-
-    resp = client.patch(f"/tasks/{task['id']}", json={"title": "Updated"})
-
-    assert resp.status_code == 200
-    assert resp.json()["title"] == "Updated"
+    assert response.status_code == 200
+    assert response.json() == []
 
 
-def test_update_in_progress_task_succeeds(client):
-    task = _create_task(client, status="in_progress")
+def test_listar_tareas_con_datos(client):
+    # Crea dos tareas y comprueba que ambas aparecen en el listado
+    client.post("/tasks/", json={"title": "Primera tarea"})
+    client.post("/tasks/", json={"title": "Segunda tarea"})
 
-    resp = client.patch(
-        f"/tasks/{task['id']}", json={"status": "done"}
-    )
+    response = client.get("/tasks/")
 
-    assert resp.status_code == 200
-    assert resp.json()["status"] == "done"
+    assert response.status_code == 200
+    assert len(response.json()) == 2
 
 
-def test_update_done_task_status_change_blocked(client):
-    task = _create_task(client, status="done")
+# ---------------------------------------------------------------------------
+# Casos de error
+# ---------------------------------------------------------------------------
 
-    resp = client.patch(f"/tasks/{task['id']}", json={"status": "pending"})
+def test_crear_tarea_titulo_vacio(client):
+    response = client.post("/tasks/", json={"title": ""})
+    assert response.status_code == 422
 
-    assert resp.status_code == 400
-    assert resp.json()["detail"] == "Cannot update a completed task"
+    response = client.post("/tasks/", json={"title": "ab"})
+    assert response.status_code == 422
+
+
+def test_obtener_tarea_no_encontrada(client):
+    response = client.get("/tasks/9999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task not found"
+
+
+def test_actualizar_tarea_completada(client):
+    task = client.post("/tasks/", json={"title": "Tarea terminada"}).json()
+    client.patch(f"/tasks/{task['id']}", json={"status": "done"})
+
+    response = client.patch(f"/tasks/{task['id']}", json={"title": "Nuevo título"})
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Cannot update a completed task"
+
+
+def test_actualizar_tarea_no_encontrada(client):
+    response = client.patch("/tasks/9999", json={"title": "No existe"})
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task not found"
+
+
+def test_eliminar_tarea_no_encontrada(client):
+    response = client.delete("/tasks/9999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Task not found"

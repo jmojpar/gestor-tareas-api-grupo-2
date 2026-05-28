@@ -78,3 +78,21 @@ def test_update_done_task_status_change_blocked(client):
 
     assert resp.status_code == 400
     assert resp.json()["detail"] == "Cannot update a completed task"
+
+
+def test_delete_all_tasks_clears_database(client):
+    _create_task(client, title="Task 1")
+    _create_task(client, title="Task 2")
+    _create_task(client, title="Task 3")
+
+    resp = client.delete("/tasks/")
+
+    assert resp.status_code == 204
+    assert client.get("/tasks/").json() == []
+
+
+def test_delete_all_tasks_on_empty_database_returns_204(client):
+    resp = client.delete("/tasks/")
+
+    assert resp.status_code == 204
+    assert client.get("/tasks/").json() == []

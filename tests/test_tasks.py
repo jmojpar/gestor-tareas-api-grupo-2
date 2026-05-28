@@ -80,6 +80,15 @@ def test_update_done_task_status_change_blocked(client):
     assert resp.json()["detail"] == "Cannot update a completed task"
 
 
+def test_update_task_short_title_returns_422(client):
+    task = _create_task(client)
+
+    resp = client.patch(f"/tasks/{task['id']}", json={"title": "AB"})
+
+    assert resp.status_code == 422
+    assert resp.json()["detail"] == "Title must be at least 3 characters long"
+
+
 def test_delete_all_tasks_clears_database(client):
     _create_task(client, title="Task 1")
     _create_task(client, title="Task 2")

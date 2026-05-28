@@ -197,7 +197,9 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 | `description` | `string`     | no          | Nueva descripción                                  |
 | `status`      | `string`     | no          | Nuevo estado (`pending`, `in_progress` o `done`)   |
 
-> **Restricción:** no se permite actualizar una tarea cuyo estado actual sea `done`.
+> **Restricciones:**
+> - No se permite actualizar una tarea cuyo estado actual sea `done`.
+> - El campo `title`, si se incluye, debe tener al menos 3 caracteres.
 
 **Ejemplo de petición:**
 
@@ -224,6 +226,14 @@ curl -X PATCH http://127.0.0.1:8000/tasks/2 \
 ```json
 {
   "detail": "Cannot update a completed task"
+}
+```
+
+**Error** (`422 Unprocessable Entity` — título demasiado corto):
+
+```json
+{
+  "detail": "Title must be at least 3 characters long"
 }
 ```
 

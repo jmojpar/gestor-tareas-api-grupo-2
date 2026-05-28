@@ -1,6 +1,6 @@
 # API de Gestión de Tareas
 
-API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional, estado (`pending`, `in_progress`, `done`) y fecha de creación asignada automáticamente.
+API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional (`description`), descripción auxiliar opcional (`descripcion`, máximo 500 caracteres), estado (`pending`, `in_progress`, `done`) y fecha de creación asignada automáticamente.
 
 ---
 
@@ -90,6 +90,7 @@ curl http://127.0.0.1:8000/tasks/
     "id": 1,
     "title": "Revisar documentación",
     "description": "Actualizar el README del proyecto",
+    "descripcion": null,
     "status": "pending",
     "created_at": "2026-05-28T10:00:00"
   }
@@ -124,6 +125,7 @@ curl http://127.0.0.1:8000/tasks/1
   "id": 1,
   "title": "Revisar documentación",
   "description": "Actualizar el README del proyecto",
+  "descripcion": null,
   "status": "pending",
   "created_at": "2026-05-28T10:00:00"
 }
@@ -152,6 +154,7 @@ curl http://127.0.0.1:8000/tasks/1
 |---------------|--------------|-------------|-------------------|------------------------------------------------------|
 | `title`       | `string`     | sí          | —                 | Título de la tarea                                   |
 | `description` | `string`     | no          | `null`            | Descripción opcional                                 |
+| `descripcion` | `string`     | no          | `null`            | Descripción auxiliar (máx. 500 caracteres)           |
 | `status`      | `string`     | no          | `"pending"`       | Estado inicial (`pending`, `in_progress` o `done`)   |
 
 **Ejemplo de petición:**
@@ -169,6 +172,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
   "id": 2,
   "title": "Escribir tests",
   "description": "Cubrir los casos de error",
+  "descripcion": null,
   "status": "pending",
   "created_at": "2026-05-28T10:05:00"
 }
@@ -195,6 +199,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 |---------------|--------------|-------------|----------------------------------------------------|
 | `title`       | `string`     | no          | Nuevo título                                       |
 | `description` | `string`     | no          | Nueva descripción                                  |
+| `descripcion` | `string`     | no          | Nueva descripción auxiliar (máx. 500 caracteres)   |
 | `status`      | `string`     | no          | Nuevo estado (`pending`, `in_progress` o `done`)   |
 
 > **Restricciones:**
@@ -216,6 +221,7 @@ curl -X PATCH http://127.0.0.1:8000/tasks/2 \
   "id": 2,
   "title": "Escribir tests",
   "description": "Cubrir los casos de error",
+  "descripcion": null,
   "status": "in_progress",
   "created_at": "2026-05-28T10:05:00"
 }

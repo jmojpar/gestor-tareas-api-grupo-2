@@ -76,8 +76,8 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
     Args:
         payload (TaskCreate): Esquema Pydantic con los datos de la nueva
-            tarea. Solo ``title`` es obligatorio; ``description`` y
-            ``status`` son opcionales.
+            tarea. Solo ``title`` es obligatorio; ``description``,
+            ``descripcion`` y ``status`` son opcionales.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:
@@ -103,6 +103,7 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
         task_id (int): Identificador único de la tarea a actualizar.
         payload (TaskUpdate): Esquema Pydantic con los campos a modificar.
             Todos los campos son opcionales (actualización parcial).
+            ``descripcion`` admite un máximo de 500 caracteres.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:

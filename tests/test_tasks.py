@@ -89,6 +89,53 @@ def test_update_task_short_title_returns_422(client):
     assert resp.json()["detail"] == "Title must be at least 3 characters long"
 
 
+def test_create_task_with_descripcion(client):
+    resp = client.post(
+        "/tasks/",
+        json={"title": "Tarea con descripcion", "descripcion": "Texto auxiliar"},
+    )
+
+    assert resp.status_code == 201
+    data = resp.json()
+    assert data["descripcion"] == "Texto auxiliar"
+
+
+def test_create_task_without_descripcion_defaults_to_null(client):
+    task = _create_task(client)
+
+    assert task["descripcion"] is None
+
+
+def test_create_task_descripcion_exceeds_500_returns_422(client):
+    resp = client.post(
+        "/tasks/",
+        json={"title": "Tarea larga", "descripcion": "A" * 501},
+    )
+
+    assert resp.status_code == 422
+
+
+def test_update_task_descripcion(client):
+    task = _create_task(client)
+
+    resp = client.patch(
+        f"/tasks/{task['id']}", json={"descripcion": "Actualizada"}
+    )
+
+    assert resp.status_code == 200
+    assert resp.json()["descripcion"] == "Actualizada"
+
+
+def test_update_task_descripcion_exceeds_500_returns_422(client):
+    task = _create_task(client)
+
+    resp = client.patch(
+        f"/tasks/{task['id']}", json={"descripcion": "B" * 501}
+    )
+
+    assert resp.status_code == 422
+
+
 def test_delete_all_tasks_clears_database(client):
     _create_task(client, title="Task 1")
     _create_task(client, title="Task 2")

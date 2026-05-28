@@ -76,8 +76,8 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
     Args:
         payload (TaskCreate): Esquema Pydantic con los datos de la nueva
-            tarea. Solo ``title`` es obligatorio; ``description`` y
-            ``status`` son opcionales.
+            tarea. Solo ``title`` es obligatorio; ``description``,
+            ``descripcion`` y ``status`` son opcionales.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:
@@ -103,6 +103,7 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
         task_id (int): Identificador único de la tarea a actualizar.
         payload (TaskUpdate): Esquema Pydantic con los campos a modificar.
             Todos los campos son opcionales (actualización parcial).
+            ``descripcion`` admite un máximo de 500 caracteres.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:
@@ -114,12 +115,19 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
             ``task_id`` proporcionado.
         HTTPException: Con código 400 si la tarea tiene estado ``done``,
             ya que las tareas completadas no admiten modificaciones.
+        HTTPException: Con código 422 si el título proporcionado tiene
+            menos de 3 caracteres.
     """
     task = get_task_or_404(task_id, db)
     if task.status == TaskStatus.done:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot update a completed task",
+        )
+    if payload.title is not None and len(payload.title) < 3:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Title must be at least 3 characters long",
         )
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(task, field, value)

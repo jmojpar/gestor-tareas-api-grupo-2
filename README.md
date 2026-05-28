@@ -268,6 +268,25 @@ curl -X DELETE http://127.0.0.1:8000/tasks/2
 
 ---
 
+### 6. Eliminar todas las tareas
+
+| Campo  | Valor      |
+|--------|------------|
+| Método | `DELETE`   |
+| Ruta   | `/tasks/`  |
+
+**Parámetros:** ninguno.
+
+**Ejemplo de petición:**
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/tasks/
+```
+
+**Respuesta exitosa:** `204 No Content` (sin cuerpo). Todas las tareas han sido eliminadas de la base de datos.
+
+---
+
 ## Ejecutar los tests
 
 ```bash

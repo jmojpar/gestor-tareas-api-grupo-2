@@ -36,7 +36,7 @@ def client():
 
 
 def _create_task(client, **kwargs):
-    payload = {"title": "Test task", **kwargs}
+    payload = {"title": "Test task", "categoria": None, **kwargs}
     resp = client.post("/tasks/", json=payload)
     assert resp.status_code == 201
     return resp.json()
@@ -160,3 +160,27 @@ def test_list_tasks_includes_priority(client):
     priorities = [t["priority"] for t in resp.json()]
     assert "high" in priorities
     assert "low" in priorities
+
+
+def test_create_task_with_categoria(client):
+    task = _create_task(client, categoria="Trabajo")
+    assert task["categoria"] == "Trabajo"
+
+
+def test_create_task_without_categoria(client):
+    task = _create_task(client)
+    assert task["categoria"] is None
+
+
+def test_update_task_categoria(client):
+    task = _create_task(client)
+    resp = client.patch(f"/tasks/{task['id']}", json={"categoria": "Personal"})
+    assert resp.status_code == 200
+    assert resp.json()["categoria"] == "Personal"
+
+
+def test_get_task_includes_categoria(client):
+    task = _create_task(client, categoria="Estudio")
+    resp = client.get(f"/tasks/{task['id']}")
+    assert resp.status_code == 200
+    assert resp.json()["categoria"] == "Estudio"

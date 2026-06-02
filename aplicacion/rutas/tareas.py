@@ -29,9 +29,29 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
 
 # Crea una nueva tarea y devuelve el recurso creado con código 201
-# Bug: no valida que el título tenga al menos 3 caracteres antes de persistir
 @router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
+    """Crea una nueva tarea y la persiste en la base de datos.
+
+    Args:
+        payload (TaskCreate): Esquema Pydantic con los datos de la nueva
+            tarea. Solo ``title`` es obligatorio; ``description`` y
+            ``status`` son opcionales.
+        db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
+
+    Returns:
+        TaskResponse: Representación de la tarea recién creada, incluyendo
+            el ``id`` y ``created_at`` generados por la base de datos.
+
+    Raises:
+        HTTPException: Con código 400 si el título tiene menos de 3
+            caracteres.
+    """
+    if len(payload.title.strip()) < 3:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El título debe tener al menos 3 caracteres",
+        )
     task = Task(**payload.model_dump())
     db.add(task)
     db.commit()
@@ -42,16 +62,32 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 # Actualiza parcialmente una tarea; solo modifica los campos enviados en el cuerpo
 @router.patch("/{task_id}", response_model=TaskResponse)
 def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)):
+    """Actualiza parcialmente una tarea existente.
+
+    Solo modifica los campos incluidos en el cuerpo de la petición.
+    Las tareas con estado ``done`` no pueden ser modificadas.
+
+    Args:
+        task_id (int): Identificador único de la tarea a actualizar.
+        payload (TaskUpdate): Esquema Pydantic con los campos a modificar.
+        db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
+
+    Returns:
+        TaskResponse: Representación de la tarea con los campos
+            actualizados.
+
+    Raises:
+        HTTPException: Con código 404 si no existe la tarea.
+        HTTPException: Con código 400 si la tarea tiene estado ``done``.
+    """
     task = db.query(Task).filter(Task.id == task_id).first()
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
 
-    # Bug: comprueba el estado del payload en lugar del estado actual de la tarea;
-    # una tarea ya completada puede modificarse sin ningún error
-    if payload.status == TaskStatus.done:
+    if task.status == TaskStatus.done:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No se puede establecer el estado a done directamente",
+            detail="Cannot update a completed task",
         )
 
     for field, value in payload.model_dump(exclude_unset=True).items():

@@ -1,6 +1,6 @@
 ---
 name: test-api
-description: Ejecutar los tests de la API gestor-tareas-api y verificar que pasan correctamente.
+description: Ejecutar los tests de la API gestor-tareas-api-grupo-2 y verificar que pasan correctamente.
 ---
 
 ## Configuración

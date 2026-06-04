@@ -1,6 +1,6 @@
 # API de Gestión de Tareas
 
-API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional, categoría opcional, estado (`pending`, `in_progress`, `done`) y fecha de creación asignada automáticamente.
+API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional, categoría opcional, estado (`pending`, `in_progress`, `done`), prioridad (`low`, `medium`, `high`) y fecha de creación asignada automáticamente.
 
 ---
 
@@ -91,6 +91,7 @@ curl http://127.0.0.1:8000/tasks/
     "title": "Revisar documentación",
     "description": "Actualizar el README del proyecto",
     "status": "pending",
+    "priority": "medium",
     "categoria": null,
     "created_at": "2026-05-28T10:00:00"
   }
@@ -126,6 +127,7 @@ curl http://127.0.0.1:8000/tasks/1
   "title": "Revisar documentación",
   "description": "Actualizar el README del proyecto",
   "status": "pending",
+  "priority": "medium",
   "categoria": null,
   "created_at": "2026-05-28T10:00:00"
 }
@@ -155,6 +157,7 @@ curl http://127.0.0.1:8000/tasks/1
 | `title`       | `string`     | sí          | —                 | Título de la tarea                                   |
 | `description` | `string`     | no          | `null`            | Descripción opcional                                 |
 | `status`      | `string`     | no          | `"pending"`       | Estado inicial (`pending`, `in_progress` o `done`)   |
+| `priority`    | `string`     | no          | `"medium"`        | Prioridad (`low`, `medium` o `high`)                 |
 | `categoria`   | `string`     | no          | `null`            | Categoría opcional de la tarea                       |
 
 **Ejemplo de petición:**
@@ -173,6 +176,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
   "title": "Escribir tests",
   "description": "Cubrir los casos de error",
   "status": "pending",
+  "priority": "medium",
   "categoria": null,
   "created_at": "2026-05-28T10:05:00"
 }
@@ -200,6 +204,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 | `title`       | `string`     | no          | Nuevo título                                       |
 | `description` | `string`     | no          | Nueva descripción                                  |
 | `status`      | `string`     | no          | Nuevo estado (`pending`, `in_progress` o `done`)   |
+| `priority`    | `string`     | no          | Nueva prioridad (`low`, `medium` o `high`)         |
 | `categoria`   | `string`     | no          | Nueva categoría                                    |
 
 > **Restricción:** no se permite actualizar una tarea cuyo estado actual sea `done`.
@@ -220,6 +225,7 @@ curl -X PATCH http://127.0.0.1:8000/tasks/2 \
   "title": "Escribir tests",
   "description": "Cubrir los casos de error",
   "status": "in_progress",
+  "priority": "medium",
   "categoria": null,
   "created_at": "2026-05-28T10:05:00"
 }
@@ -310,7 +316,7 @@ gestor-tareas-api-grupo-2/
 ├── aplicacion/                 # Paquete principal de la aplicación
 │   ├── principal.py            # Punto de entrada: instancia FastAPI y registro de routers
 │   ├── base_de_datos.py        # Configuración del engine y sesión de SQLAlchemy
-│   ├── modelos.py              # Modelos ORM (tabla tasks, enum TaskStatus)
+│   ├── modelos.py              # Modelos ORM (tabla tasks, enums TaskStatus y TaskPriority)
 │   ├── esquemas.py             # Esquemas Pydantic de entrada y respuesta
 │   └── rutas/                  # Endpoints REST organizados por recurso
 │       └── tareas.py           # Endpoints CRUD de tareas

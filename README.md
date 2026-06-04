@@ -152,7 +152,7 @@ curl http://127.0.0.1:8000/tasks/1
 
 | Campo         | Tipo         | Obligatorio | Valor por defecto | Descripción                                          |
 |---------------|--------------|-------------|-------------------|------------------------------------------------------|
-| `title`       | `string`     | sí          | —                 | Título de la tarea                                   |
+| `title`       | `string`     | sí          | —                 | Título de la tarea (mínimo 3 caracteres)             |
 | `description` | `string`     | no          | `null`            | Descripción opcional                                 |
 | `status`      | `string`     | no          | `"pending"`       | Estado inicial (`pending`, `in_progress` o `done`)   |
 | `categoria`   | `string`     | no          | `null`            | Categoría opcional de la tarea                       |
@@ -197,12 +197,14 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 
 | Campo         | Tipo         | Obligatorio | Descripción                                        |
 |---------------|--------------|-------------|----------------------------------------------------|
-| `title`       | `string`     | no          | Nuevo título                                       |
+| `title`       | `string`     | no          | Nuevo título (mínimo 3 caracteres)                 |
 | `description` | `string`     | no          | Nueva descripción                                  |
 | `status`      | `string`     | no          | Nuevo estado (`pending`, `in_progress` o `done`)   |
 | `categoria`   | `string`     | no          | Nueva categoría                                    |
 
-> **Restricción:** no se permite actualizar una tarea cuyo estado actual sea `done`.
+> **Restricciones:**
+> - No se permite actualizar una tarea cuyo estado actual sea `done`.
+> - Si se incluye `title`, debe tener al menos 3 caracteres.
 
 **Ejemplo de petición:**
 

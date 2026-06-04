@@ -120,3 +120,22 @@ def test_get_task_includes_categoria(client):
     resp = client.get(f"/tasks/{task['id']}")
     assert resp.status_code == 200
     assert resp.json()["categoria"] == "Estudio"
+
+
+def test_create_task_short_title_returns_422(client):
+    resp = client.post("/tasks/", json={"title": "AB"})
+    assert resp.status_code == 422
+    assert any("title" in str(e["loc"]) for e in resp.json()["detail"])
+
+
+def test_create_task_min_title_succeeds(client):
+    resp = client.post("/tasks/", json={"title": "ABC"})
+    assert resp.status_code == 201
+    assert resp.json()["title"] == "ABC"
+
+
+def test_update_task_short_title_returns_422(client):
+    task = _create_task(client)
+    resp = client.patch(f"/tasks/{task['id']}", json={"title": "XY"})
+    assert resp.status_code == 422
+    assert any("title" in str(e["loc"]) for e in resp.json()["detail"])

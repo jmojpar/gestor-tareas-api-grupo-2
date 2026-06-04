@@ -74,15 +74,22 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
     """Crea una nueva tarea y la persiste en la base de datos.
 
+    El título debe tener al menos 3 caracteres; de lo contrario Pydantic
+    rechaza la petición con código 422.
+
     Args:
         payload (TaskCreate): Esquema Pydantic con los datos de la nueva
-            tarea. Solo ``title`` es obligatorio; ``description`` y
-            ``status`` son opcionales.
+            tarea. Solo ``title`` es obligatorio (mínimo 3 caracteres);
+            ``description`` y ``status`` son opcionales.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:
         TaskResponse: Representación de la tarea recién creada, incluyendo
             el ``id`` y ``created_at`` generados por la base de datos.
+
+    Raises:
+        HTTPException: Con código 422 si ``title`` tiene menos de 3
+            caracteres (validación automática de Pydantic).
     """
     task = Task(**payload.model_dump())
     db.add(task)
@@ -98,11 +105,13 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
 
     Solo modifica los campos incluidos en el cuerpo de la petición.
     Las tareas con estado ``done`` no pueden ser modificadas.
+    Si se envía ``title``, debe tener al menos 3 caracteres.
 
     Args:
         task_id (int): Identificador único de la tarea a actualizar.
         payload (TaskUpdate): Esquema Pydantic con los campos a modificar.
             Todos los campos son opcionales (actualización parcial).
+            Si se incluye ``title``, debe tener al menos 3 caracteres.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:
@@ -114,6 +123,8 @@ def update_task(task_id: int, payload: TaskUpdate, db: Session = Depends(get_db)
             ``task_id`` proporcionado.
         HTTPException: Con código 400 si la tarea tiene estado ``done``,
             ya que las tareas completadas no admiten modificaciones.
+        HTTPException: Con código 422 si ``title`` tiene menos de 3
+            caracteres (validación automática de Pydantic).
     """
     task = get_task_or_404(task_id, db)
     if task.status == TaskStatus.done:

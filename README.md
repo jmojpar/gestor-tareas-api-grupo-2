@@ -67,19 +67,24 @@ La documentación interactiva (Swagger UI) se genera automáticamente en `http:/
 
 Todos los endpoints utilizan el prefijo `/tasks`.
 
-### 1. Listar todas las tareas
+### 1. Listar tareas
 
 | Campo  | Valor             |
 |--------|-------------------|
 | Método | `GET`             |
 | Ruta   | `/tasks/`         |
 
-**Parámetros:** ninguno.
+**Parámetros de query:**
+
+| Parámetro | Tipo  | Obligatorio | Descripción                                         |
+|-----------|-------|-------------|-----------------------------------------------------|
+| `limit`   | `int` | no          | Número máximo de tareas a devolver (debe ser >= 1). Si se omite, devuelve todas. |
 
 **Ejemplo de petición:**
 
 ```bash
 curl http://127.0.0.1:8000/tasks/
+curl "http://127.0.0.1:8000/tasks/?limit=5"
 ```
 
 **Ejemplo de respuesta** (`200 OK`):

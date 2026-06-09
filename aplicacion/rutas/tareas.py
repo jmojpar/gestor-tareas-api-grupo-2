@@ -76,8 +76,8 @@ def create_task(payload: TaskCreate, db: Session = Depends(get_db)):
 
     Args:
         payload (TaskCreate): Esquema Pydantic con los datos de la nueva
-            tarea. Solo ``title`` es obligatorio; ``description`` y
-            ``status`` son opcionales.
+            tarea. Solo ``title`` es obligatorio; ``description``
+            (máx. 200 caracteres) y ``status`` son opcionales.
         db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
 
     Returns:

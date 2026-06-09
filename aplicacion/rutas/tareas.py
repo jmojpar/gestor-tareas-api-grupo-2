@@ -1,8 +1,9 @@
 # Definición de los endpoints REST para la gestión de tareas
 
-from typing import List
+from typing import Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from aplicacion.base_de_datos import get_db
@@ -48,6 +49,22 @@ def list_tasks(db: Session = Depends(get_db)):
             base de datos.
     """
     return db.query(Task).all()
+
+
+# Devuelve el número total de tareas almacenadas
+@router.get("/count", response_model=Dict[str, int])
+def count_tasks(db: Session = Depends(get_db)):
+    """Devuelve el número total de tareas almacenadas en la base de datos.
+
+    Args:
+        db (Session): Sesión activa de SQLAlchemy inyectada por ``get_db``.
+
+    Returns:
+        Dict[str, int]: Diccionario con la clave ``count`` y el número
+            total de tareas como valor.
+    """
+    total = db.query(func.count(Task.id)).scalar()
+    return {"count": total}
 
 
 # Devuelve una tarea por su identificador; 404 si no existe

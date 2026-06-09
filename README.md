@@ -99,7 +99,32 @@ curl http://127.0.0.1:8000/tasks/
 
 ---
 
-### 2. Obtener una tarea por id
+### 2. Contar tareas
+
+| Campo  | Valor             |
+|--------|-------------------|
+| Método | `GET`             |
+| Ruta   | `/tasks/count`    |
+
+**Parámetros:** ninguno.
+
+**Ejemplo de petición:**
+
+```bash
+curl http://127.0.0.1:8000/tasks/count
+```
+
+**Ejemplo de respuesta** (`200 OK`):
+
+```json
+{
+  "count": 5
+}
+```
+
+---
+
+### 3. Obtener una tarea por id
 
 | Campo  | Valor              |
 |--------|--------------------|
@@ -141,7 +166,7 @@ curl http://127.0.0.1:8000/tasks/1
 
 ---
 
-### 3. Crear una nueva tarea
+### 4. Crear una nueva tarea
 
 | Campo  | Valor    |
 |--------|----------|
@@ -180,7 +205,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 
 ---
 
-### 4. Actualizar parcialmente una tarea
+### 5. Actualizar parcialmente una tarea
 
 | Campo  | Valor              |
 |--------|--------------------|
@@ -243,7 +268,7 @@ curl -X PATCH http://127.0.0.1:8000/tasks/2 \
 
 ---
 
-### 5. Eliminar una tarea
+### 6. Eliminar una tarea
 
 | Campo  | Valor              |
 |--------|--------------------|
@@ -274,7 +299,7 @@ curl -X DELETE http://127.0.0.1:8000/tasks/2
 
 ---
 
-### 6. Eliminar todas las tareas
+### 7. Eliminar todas las tareas
 
 | Campo  | Valor      |
 |--------|------------|

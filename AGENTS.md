@@ -71,6 +71,7 @@ Los tests usan una base de datos SQLite en memoria con `StaticPool` para garanti
 | Método | Ruta | Descripción |
 |---|---|---|
 | GET | `/tasks/` | Lista todas las tareas |
+| GET | `/tasks/count` | Devuelve el número total de tareas |
 | GET | `/tasks/{id}` | Obtiene una tarea por id |
 | POST | `/tasks/` | Crea una nueva tarea |
 | PATCH | `/tasks/{id}` | Actualiza parcialmente una tarea |

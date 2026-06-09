@@ -120,3 +120,19 @@ def test_get_task_includes_categoria(client):
     resp = client.get(f"/tasks/{task['id']}")
     assert resp.status_code == 200
     assert resp.json()["categoria"] == "Estudio"
+
+
+def test_count_tasks_returns_200_on_empty_database(client):
+    resp = client.get("/tasks/count")
+    assert resp.status_code == 200
+    assert resp.json() == {"count": 0}
+
+
+def test_count_tasks_increases_after_creating_task(client):
+    _create_task(client, title="Task 1")
+    _create_task(client, title="Task 2")
+
+    resp = client.get("/tasks/count")
+
+    assert resp.status_code == 200
+    assert resp.json() == {"count": 2}

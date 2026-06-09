@@ -120,3 +120,11 @@ def test_get_task_includes_categoria(client):
     resp = client.get(f"/tasks/{task['id']}")
     assert resp.status_code == 200
     assert resp.json()["categoria"] == "Estudio"
+
+
+def test_create_task_returns_201():
+    response = client.post(
+        "/tasks/",
+        json={"title": "Test"}
+    )
+    assert response.status_code == 201

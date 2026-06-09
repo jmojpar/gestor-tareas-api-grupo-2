@@ -120,3 +120,22 @@ def test_get_task_includes_categoria(client):
     resp = client.get(f"/tasks/{task['id']}")
     assert resp.status_code == 200
     assert resp.json()["categoria"] == "Estudio"
+
+
+def test_create_task_with_description_at_max_length(client):
+    desc = "a" * 200
+    task = _create_task(client, description=desc)
+    assert task["description"] == desc
+
+
+def test_create_task_with_description_exceeding_max_length(client):
+    desc = "a" * 201
+    resp = client.post("/tasks/", json={"title": "Test task", "description": desc})
+    assert resp.status_code == 422
+
+
+def test_update_task_description_exceeding_max_length(client):
+    task = _create_task(client)
+    desc = "a" * 201
+    resp = client.patch(f"/tasks/{task['id']}", json={"description": desc})
+    assert resp.status_code == 422

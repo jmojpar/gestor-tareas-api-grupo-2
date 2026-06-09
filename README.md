@@ -1,6 +1,6 @@
 # API de Gestión de Tareas
 
-API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional, categoría opcional, estado (`pending`, `in_progress`, `done`) y fecha de creación asignada automáticamente.
+API REST para gestionar el ciclo de vida de tareas, construida con **FastAPI** y **SQLAlchemy**. Permite crear, consultar, actualizar parcialmente y eliminar tareas. Cada tarea posee un identificador único, título, descripción opcional (máximo 200 caracteres), categoría opcional, estado (`pending`, `in_progress`, `done`) y fecha de creación asignada automáticamente.
 
 ---
 
@@ -153,7 +153,7 @@ curl http://127.0.0.1:8000/tasks/1
 | Campo         | Tipo         | Obligatorio | Valor por defecto | Descripción                                          |
 |---------------|--------------|-------------|-------------------|------------------------------------------------------|
 | `title`       | `string`     | sí          | —                 | Título de la tarea                                   |
-| `description` | `string`     | no          | `null`            | Descripción opcional                                 |
+| `description` | `string`     | no          | `null`            | Descripción opcional (máx. 200 caracteres)           |
 | `status`      | `string`     | no          | `"pending"`       | Estado inicial (`pending`, `in_progress` o `done`)   |
 | `categoria`   | `string`     | no          | `null`            | Categoría opcional de la tarea                       |
 
@@ -198,7 +198,7 @@ curl -X POST http://127.0.0.1:8000/tasks/ \
 | Campo         | Tipo         | Obligatorio | Descripción                                        |
 |---------------|--------------|-------------|----------------------------------------------------|
 | `title`       | `string`     | no          | Nuevo título                                       |
-| `description` | `string`     | no          | Nueva descripción                                  |
+| `description` | `string`     | no          | Nueva descripción (máx. 200 caracteres)            |
 | `status`      | `string`     | no          | Nuevo estado (`pending`, `in_progress` o `done`)   |
 | `categoria`   | `string`     | no          | Nueva categoría                                    |
 
